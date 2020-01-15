@@ -1,0 +1,112 @@
+{
+  "environments": [
+    {
+      "name": "mock",
+      "endpoints": [
+        {
+          "resource": "RetailPlan",
+          "baseUrl": "http://localhost:4300",
+          "url": "retail-plan",
+          "versions": [
+            {
+              "verb": "default",
+              "value": "v1"
+            }
+          ]
+        },
+        {
+          "resource": "CallType",
+          "baseUrl": "http://localhost:4300",
+          "url": "call-type",
+          "versions": [
+            {
+              "verb": "default",
+              "value": "v1"
+            }
+          ]
+        },
+        {
+          "resource": "Client",
+          "baseUrl": "http://localhost:4300",
+          "url": "client",
+          "versions": [
+            {
+              "verb": "default",
+              "value": "v1"
+            }
+          ]
+        },
+        {
+          "resource": "Cycle",
+          "baseUrl": "http://localhost:4300",
+          "url": "cycle",
+          "versions": [
+            {
+              "verb": "default",
+              "value": "v1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "local",
+      "endpoints": [
+        {
+          "resource": "RetailPlan",
+          "baseUrl": "",
+          "url": "retail-plans",
+          "versions": [
+            {
+              "verb": "default",
+              "value": "v1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "development",
+      "endpoints": [
+        {
+          "resource": "RetailPlan",
+          "baseUrl": "https://retail-dev-app.advantagesolutions.net/api/workload",
+          "url": "retail-plan",
+          "versions": [
+            {
+              "verb": "default",
+              "value": "v1"
+            }
+          ]
+        },
+        {
+          "resource": "CallType",
+          "baseUrl": "https://retail-dev-app.advantagesolutions.net/api",
+          "url": "api/workload/hub",
+          "versions": [
+            {
+              "verb": "default",
+              "value": "v1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "production",
+      "endpoints": [
+        {
+          "resource": "RetailPlan",
+          "baseUrl": "#{WORKLOAD_API_BASE_URL}#",
+          "url": "retail-plans",
+          "versions": [
+            {
+              "verb": "default",
+              "value": "v1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
