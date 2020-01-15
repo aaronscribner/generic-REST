@@ -1,12 +1,12 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, OperatorFunction } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Resource } from '../../../shared/models/resource.model';
-import { HttpVerb } from '../resource-url-service/enums/http-verbs.enum';
-import { ResourceUrlService } from '../resource-url-service/resource-url.service';
-import { IHttpResourceResponse } from './http-resource-response.interface';
+import { Resource } from '../../../../shared/models/base-classes/resource.model';
+import { HttpVerb } from '../../resource-url-service/enums/http-verbs.enum';
+import { ResourceUrlService } from '../../resource-url-service/resource-url.service';
+import { IHttpResourceResponse } from '../interfaces/http-resource-response.interface';
 
-export class HttpResourceService<T extends Resource<T>, U extends Resource<U>> {
+export class HttpSubResourceService<T extends Resource<T>, U extends Resource<U>> {
   constructor(
     private resourceName: string,
     private httpClient: HttpClient,
@@ -15,7 +15,7 @@ export class HttpResourceService<T extends Resource<T>, U extends Resource<U>> {
     private listType: new (object?: U) => U
   ) {}
 
-  public list(): Observable<U[]> {
+  public list(identifiers: string[] | number[]): Observable<U[]> {
     const endpointDetails = this.resourceUrlService.resourceUrl(
       this.resourceName,
       HttpVerb.GET
@@ -36,7 +36,7 @@ export class HttpResourceService<T extends Resource<T>, U extends Resource<U>> {
       );
   }
 
-  public create(item: T): Observable<T> {
+  public create(item: T, identifiers: string[] | number[]): Observable<T> {
     const endpointDetails = this.resourceUrlService.resourceUrl(
       this.resourceName,
       HttpVerb.POST
@@ -57,7 +57,7 @@ export class HttpResourceService<T extends Resource<T>, U extends Resource<U>> {
       );
   }
 
-  public read(id: number | string): Observable<T> {
+  public read(id: number | string, identifiers: string[] | number[]): Observable<T> {
     const endpointDetails = this.resourceUrlService.resourceUrl(
       this.resourceName,
       HttpVerb.GET
@@ -70,7 +70,7 @@ export class HttpResourceService<T extends Resource<T>, U extends Resource<U>> {
       .pipe(this.mapResponse());
   }
 
-  public query(): Observable<T> {
+  public query(identifiers: string[] | number[]): Observable<T> {
     const endpointDetails = this.resourceUrlService.resourceUrl(
       this.resourceName,
       HttpVerb.GET
@@ -83,7 +83,7 @@ export class HttpResourceService<T extends Resource<T>, U extends Resource<U>> {
       .pipe(this.mapResponse());
   }
 
-  public update(item: T): Observable<T> {
+  public update(item: T, identifiers: string[] | number[]): Observable<T> {
     const endpointDetails = this.resourceUrlService.resourceUrl(
       this.resourceName,
       HttpVerb.PUT
@@ -98,7 +98,7 @@ export class HttpResourceService<T extends Resource<T>, U extends Resource<U>> {
       .pipe(this.mapResponse());
   }
 
-  public delete(id: number | string): Observable<object> {
+  public delete(id: number | string, identifiers: string[] | number[]): Observable<object> {
     const endpointDetails = this.resourceUrlService.resourceUrl(
       this.resourceName,
       HttpVerb.DELETE

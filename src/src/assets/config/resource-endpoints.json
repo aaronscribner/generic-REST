@@ -1,77 +1,12 @@
 {
   "environments": [
     {
-      "name": "mock",
-      "endpoints": [
-        {
-          "resource": "RetailPlan",
-          "baseUrl": "http://localhost:4300",
-          "url": "retail-plan",
-          "versions": [
-            {
-              "verb": "default",
-              "value": "v1"
-            }
-          ]
-        },
-        {
-          "resource": "CallType",
-          "baseUrl": "http://localhost:4300",
-          "url": "call-type",
-          "versions": [
-            {
-              "verb": "default",
-              "value": "v1"
-            }
-          ]
-        },
-        {
-          "resource": "Client",
-          "baseUrl": "http://localhost:4300",
-          "url": "client",
-          "versions": [
-            {
-              "verb": "default",
-              "value": "v1"
-            }
-          ]
-        },
-        {
-          "resource": "Cycle",
-          "baseUrl": "http://localhost:4300",
-          "url": "cycle",
-          "versions": [
-            {
-              "verb": "default",
-              "value": "v1"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "local",
-      "endpoints": [
-        {
-          "resource": "RetailPlan",
-          "baseUrl": "",
-          "url": "retail-plans",
-          "versions": [
-            {
-              "verb": "default",
-              "value": "v1"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "name": "development",
       "endpoints": [
         {
-          "resource": "RetailPlan",
-          "baseUrl": "https://retail-dev-app.advantagesolutions.net/api/workload",
-          "url": "retail-plan",
+          "resource": "AggregateRoot",
+          "baseUrl": "http://localhost:4300",
+          "url": "aggregate-roots",
           "versions": [
             {
               "verb": "default",
@@ -80,25 +15,31 @@
           ]
         },
         {
-          "resource": "CallType",
-          "baseUrl": "https://retail-dev-app.advantagesolutions.net/api",
-          "url": "api/workload/hub",
+          "resource": "RootParent",
+          "baseUrl": "http://localhost:4300",
+          "url": "aggregate-roots/:id/root-parents",
           "versions": [
             {
               "verb": "default",
               "value": "v1"
             }
           ]
-        }
-      ]
-    },
-    {
-      "name": "production",
-      "endpoints": [
+        },
         {
-          "resource": "RetailPlan",
-          "baseUrl": "#{WORKLOAD_API_BASE_URL}#",
-          "url": "retail-plans",
+          "resource": "RootChild",
+          "baseUrl": "http://localhost:4300",
+          "url": "aggregate-roots/:id/root-parent/:id/root-children",
+          "versions": [
+            {
+              "verb": "default",
+              "value": "v1"
+            }
+          ]
+        },
+        {
+          "resource": "RootGrandchild",
+          "baseUrl": "http://localhost:4300",
+          "url": "aggregate-roots/:id/root-parent/:id/root-child/:id/root-grandchildren",
           "versions": [
             {
               "verb": "default",

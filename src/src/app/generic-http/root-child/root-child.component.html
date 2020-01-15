@@ -1,0 +1,10 @@
+<mat-card>
+  <mat-card-title>
+    Parents
+  </mat-card-title>
+  <mat-card-content>
+    <button (click)="updateChild()">Update Child</button>
+    <app-root-grandchild *ngFor="let grandchild of child.rootGrandchildren " [grandchild]="grandchild" >
+    </app-root-grandchild>
+  </mat-card-content>
+</mat-card>

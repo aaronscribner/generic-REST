@@ -1,10 +1,10 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, OperatorFunction } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Resource } from '../../../shared/models/resource.model';
-import { HttpVerb } from '../resource-url-service/enums/http-verbs.enum';
-import { ResourceUrlService } from '../resource-url-service/resource-url.service';
-import { IHttpResourceResponse } from './http-resource-response.interface';
+import { Resource } from '../../../../shared/models/base-classes/resource.model';
+import { HttpVerb } from '../../resource-url-service/enums/http-verbs.enum';
+import { ResourceUrlService } from '../../resource-url-service/resource-url.service';
+import { IHttpResourceResponse } from '../interfaces/http-resource-response.interface';
 
 export class HttpResourceService<T extends Resource<T>, U extends Resource<U>> {
   constructor(

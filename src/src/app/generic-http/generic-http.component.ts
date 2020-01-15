@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { GenericHttpService } from '../services/generic-http.service';
+import { GenericHttpService } from './services/generic-http.service';
 
 @Component({
   selector: 'app-generic-http',

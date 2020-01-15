@@ -1,0 +1,9 @@
+<mat-card>
+  <mat-card-title>
+    Root
+  </mat-card-title>
+  <mat-card-content>
+    <app-root-parent *ngFor="let parent of parents" [parent]="parent">
+    </app-root-parent>
+  </mat-card-content>
+</mat-card>
