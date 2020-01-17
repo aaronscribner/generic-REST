@@ -1,9 +1,6 @@
 import { Serializable } from './serializable.model';
+import { SubResource } from './sub-resource.model';
 
-export abstract class Resource<T> extends Serializable<T> {
+export abstract class Resource {
   public id: number;
-
-  constructor(object?: T) {
-    super(object);
-  }
 }

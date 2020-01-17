@@ -1,0 +1,10 @@
+<mat-card>
+  <mat-card-title>
+    Grandchild {{grandchild.id}}
+  </mat-card-title>
+  <mat-card-content>
+    Hierarchy
+    <span *ngFor="let parentId of grandchild.identifierHierarchy"> {{parentId}} </span>
+    <button (click)="updateGrandchild()">Update Grandchild</button>
+  </mat-card-content>
+</mat-card>

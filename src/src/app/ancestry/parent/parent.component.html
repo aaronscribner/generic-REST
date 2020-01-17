@@ -1,0 +1,9 @@
+<mat-card>
+  <mat-card-title>
+    Parent {{parent.id}} ({{parent.identifierHierarchy}})
+  </mat-card-title>
+  <mat-card-content>
+    <app-child *ngFor="let child of parent.children" [child]="child">
+    </app-child>
+  </mat-card-content>
+</mat-card>

@@ -6,11 +6,11 @@ const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'main'
+    redirectTo: 'ancestries'
   },
   {
-    path: 'main',
-    loadChildren: () => import('./generic-http/generic-http.module').then(m => m.GenericHttpModule)
+    path: 'ancestries',
+    loadChildren: () => import('./ancestry/ancestry.module').then(m => m.AncestryModule)
   }
 ];
 

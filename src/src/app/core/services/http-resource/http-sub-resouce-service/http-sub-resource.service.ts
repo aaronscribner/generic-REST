@@ -1,121 +1,95 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, OperatorFunction } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Resource } from '../../../../shared/models/base-classes/resource.model';
+import { SubResource } from '../../../../shared/models/base-classes/sub-resource.model';
 import { HttpVerb } from '../../resource-url-service/enums/http-verbs.enum';
 import { ResourceUrlService } from '../../resource-url-service/resource-url.service';
-import { IHttpResourceResponse } from '../interfaces/http-resource-response.interface';
+import { ResourceAction } from '../enums/resource-action.enum';
 
-export class HttpSubResourceService<T extends Resource<T>, U extends Resource<U>> {
-  constructor(
+@Injectable({
+  providedIn: 'root'
+})
+export abstract class HttpSubResourceService<T extends SubResource, U extends SubResource> {
+  protected constructor(
     private resourceName: string,
     private httpClient: HttpClient,
     private resourceUrlService: ResourceUrlService,
-    private type: new (object?: T) => T,
-    private listType: new (object?: U) => U
   ) {}
 
-  public list(identifiers: string[] | number[]): Observable<U[]> {
+  public list(): Observable<U[]> {
     const endpointDetails = this.resourceUrlService.resourceUrl(
       this.resourceName,
       HttpVerb.GET
     );
     const headers = this.getHeaders(endpointDetails.version);
     return this.httpClient
-      .get<IHttpResourceResponse<U[]>>(endpointDetails.endpoint, {
+      .get<U[]>(endpointDetails.endpoint, {
         headers
       })
-      .pipe(
-        map(response => {
-          if (response && response.data) {
-            return response.data.map(item => new this.listType(item));
-          } else {
-            this.handleError(response);
-          }
-        })
-      );
+      .pipe(map((data: U[]) => this.responseHandler(data, HttpVerb.GET, ResourceAction.List) as U[]));
   }
 
-  public create(item: T, identifiers: string[] | number[]): Observable<T> {
+  public create(item: T): Observable<T> {
     const endpointDetails = this.resourceUrlService.resourceUrl(
       this.resourceName,
       HttpVerb.POST
     );
     const headers = this.getHeaders(endpointDetails.version);
     return this.httpClient
-      .post<IHttpResourceResponse<T>>(endpointDetails.endpoint, item, {
-        headers
-      })
+      .post<T>(endpointDetails.endpoint, item)
       .pipe(
-        map(response => {
-          if (response && response.data) {
-            return new this.type(response.data);
-          } else {
-            this.handleError(response);
-          }
-        })
+        map((data: T) => this.responseHandler(data, HttpVerb.POST, ResourceAction.Create) as T)
+        // catchError(data => this.handleError(data))
       );
   }
 
-  public read(id: number | string, identifiers: string[] | number[]): Observable<T> {
+  public read(id: number | string): Observable<T> {
     const endpointDetails = this.resourceUrlService.resourceUrl(
       this.resourceName,
       HttpVerb.GET
     );
     const headers = this.getHeaders(endpointDetails.version);
-    return this.httpClient
-      .get<IHttpResourceResponse<T>>(`${endpointDetails.endpoint}/${id}`, {
-        headers
-      })
-      .pipe(this.mapResponse());
+    return this.httpClient.get<T>(`${endpointDetails.endpoint}/${id}`)
+      .pipe(
+        map((data: T) => this.responseHandler(data, HttpVerb.GET, ResourceAction.Read) as T)
+      );
   }
 
-  public query(identifiers: string[] | number[]): Observable<T> {
+  public query(urlParameters: any = {}): Observable<T> {
     const endpointDetails = this.resourceUrlService.resourceUrl(
       this.resourceName,
       HttpVerb.GET
     );
     const headers = this.getHeaders(endpointDetails.version);
-    return this.httpClient
-      .get<IHttpResourceResponse<T>>(`${endpointDetails.endpoint}`, {
-        headers
-      })
-      .pipe(this.mapResponse());
+    return this.httpClient.get<T>(`${endpointDetails.endpoint}/${urlParameters}`)
+      .pipe(
+        map((data: T) => this.responseHandler(data, HttpVerb.GET, ResourceAction.Query) as T)
+      );
   }
 
-  public update(item: T, identifiers: string[] | number[]): Observable<T> {
+  public update(item: T): Observable<T> {
     const endpointDetails = this.resourceUrlService.resourceUrl(
       this.resourceName,
       HttpVerb.PUT
     );
     const headers = this.getHeaders(endpointDetails.version);
-    return this.httpClient
-      .put<IHttpResourceResponse<T>>(
-        `${endpointDetails.endpoint}/${item.id}`,
-        item,
-        { headers }
-      )
-      .pipe(this.mapResponse());
+    return this.httpClient.put<T>(`${endpointDetails.endpoint}/${item.id}`, item)
+      .pipe(
+        map((data: T) => this.responseHandler(data, HttpVerb.PUT, ResourceAction.Update) as T)
+      );
   }
 
-  public delete(id: number | string, identifiers: string[] | number[]): Observable<object> {
+  public delete(id: number | string): Observable<object> {
     const endpointDetails = this.resourceUrlService.resourceUrl(
       this.resourceName,
       HttpVerb.DELETE
     );
     const headers = this.getHeaders(endpointDetails.version);
-    return this.httpClient
-      .delete<IHttpResourceResponse<{}>>(`${endpointDetails.endpoint}/${id}`, {
-        headers
-      })
+    return this.httpClient.delete(`${endpointDetails.endpoint}/${id}`)
       .pipe(
-        map(response => {
-          if (response && response.error) {
-            this.handleError(response);
-          } else {
-            return response;
-          }
-        })
+        map((data: T) => this.responseHandler(data, HttpVerb.DELETE, ResourceAction.Delete) as T)
       );
   }
 
@@ -125,19 +99,11 @@ export class HttpSubResourceService<T extends Resource<T>, U extends Resource<U>
     return headers;
   }
 
-  private handleError<V>(response: IHttpResourceResponse<V>): void {
-    throw response && response.error
-      ? response.error
-      : { status: 404, message: 'Empty result' };
-  }
+  // private handleError(response: T | U): void {
+  //   throw response && response.error
+  //     ? response.error
+  //     : { status: 404, message: 'Empty result' };
+  // }
 
-  private mapResponse(): OperatorFunction<IHttpResourceResponse<T>, T> {
-    return map((response: IHttpResourceResponse<T>) => {
-      if (response && response.data) {
-        return new this.type(response.data);
-      } else {
-        this.handleError(response);
-      }
-    });
-  }
+  protected abstract responseHandler(response: any, verb: HttpVerb, action: ResourceAction): T | T[] | U | U[];
 }
