@@ -79,7 +79,7 @@ export abstract class HttpSubResourceService<T extends SubResource, U extends Su
     );
     const headers = this.getHeaders(endpointDetails.version);
     const hierarchyEndpoint = this.buildUrl(endpointDetails.endpoint, item.identifierHierarchy);
-    console.table({hierarchyEndpoint, item});
+    console.table({hierarchyEndpoint: `${hierarchyEndpoint}${item.id}`, item});
     return of(item);
     // return this.httpClient.put<T>(`${hierarchyEndpoint}${item.id}`, item)
     //   .pipe(
