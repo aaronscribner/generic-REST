@@ -1,4 +1,3 @@
 {
-    "/api/*": "/$1",
-    "/:resource/:id/cycle": "/:resource/:id/cycle"
+    "/ancestries/:id/parents": "/parents"
 }

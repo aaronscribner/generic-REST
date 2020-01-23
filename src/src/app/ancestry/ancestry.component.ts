@@ -2,8 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Resource } from '../shared/models/base-classes/resource.model';
 import { SubResource } from '../shared/models/base-classes/sub-resource.model';
 import { Ancestry } from './models/ancestry.model';
-import { AncestryService } from './services/ancestry.service';
-import { GenericHttpService } from './services/generic-http.service';
+import { AncestryManagementService } from './services/ancestry.management.service';
 
 @Component({
   selector: 'app-generic-http',
@@ -11,9 +10,9 @@ import { GenericHttpService } from './services/generic-http.service';
   styleUrls: ['./ancestry.component.scss']
 })
 export class AncestryComponent implements OnInit {
-  public ancestries: Ancestry[];
+  public ancestry: Ancestry;
 
-  constructor(private service: GenericHttpService) {
+  constructor(private service: AncestryManagementService) {
   }
 
   public ngOnInit(): void {
@@ -33,8 +32,8 @@ export class AncestryComponent implements OnInit {
   }
 
   private subscribeAncestries(): void {
-    this.service.getAncestries().subscribe(
-      data => this.ancestries = data
+    this.service.getAncestry(1).subscribe(
+      data => this.ancestry = data
     );
   }
 }

@@ -10,11 +10,9 @@ export class RestHierarchyService {
       .filter(([key, value]) => key !== 'identifierHierarchy' && value.constructor === Array)
       .map(([key, value]) => Object.values(value).reduce(x => x));
 
-    if (!composedSubResources) {
-      return;
-    }
-
     subResource.identifierHierarchy = parentIdentifiers;
-    composedSubResources.forEach(x => RestHierarchyService.assignHierarchyIdentifiers(x, [...parentIdentifiers, subResource.id]));
+    console.table(composedSubResources);
+    const identifiers = [...parentIdentifiers, subResource.id];
+    composedSubResources.forEach(x => RestHierarchyService.assignHierarchyIdentifiers(x, identifiers));
   }
 }

@@ -1,9 +1,15 @@
 <mat-card>
   <mat-card-title>
-    Child {{child.id}} ({{child.identifierHierarchy}})
+    Child: {{child.name}}
   </mat-card-title>
   <mat-card-content>
-    <button (click)="updateChild()">Update Child</button>
+    <form [formGroup]="ancestryForm" class="ancestry-form" (submit)="updateName()">
+      <label>Parent: {{parent.name}}</label>
+      <mat-form-field class="ancestry-full-width">
+        <input matInput placeholder="Name" formControlName="name">
+      </mat-form-field>
+      <button type="submit">Update</button>
+    </form>
     <app-grandchild *ngFor="let grandchild of child.grandchildren " [grandchild]="grandchild" >
     </app-grandchild>
   </mat-card-content>

@@ -3,8 +3,11 @@
     Grandchild {{grandchild.id}}
   </mat-card-title>
   <mat-card-content>
-    Hierarchy
-    <span *ngFor="let parentId of grandchild.identifierHierarchy"> {{parentId}} </span>
-    <button (click)="updateGrandchild()">Update Grandchild</button>
+    <form [formGroup]="ancestryForm" class="ancestry-form" (submit)="updateName()">
+      <mat-form-field class="ancestry-full-width">
+        <input matInput placeholder="Name" formControlName="name">
+      </mat-form-field>
+      <button type="submit">Update</button>
+    </form>
   </mat-card-content>
 </mat-card>

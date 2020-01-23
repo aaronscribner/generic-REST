@@ -3,6 +3,7 @@ import { Child } from './child.model';
 
 export class Parent extends SubResource {
   public children: Child[];
+  public name: string;
 
   public static fromJson(json: any): Parent | Parent[] {
     if (Array.isArray(json)) {
@@ -13,7 +14,6 @@ export class Parent extends SubResource {
     const { children } = json;
     json.children = Child.fromJson(children);
     Object.assign(result, json);
-    // result.children.forEach(x => x.parentId = [result.id]);
     return result;
   }
 }

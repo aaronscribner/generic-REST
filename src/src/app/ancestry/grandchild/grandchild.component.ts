@@ -1,7 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { Grandchild } from '../models/grandchild.model';
-import { GenericHttpService } from '../services/generic-http.service';
+import { AncestryManagementService } from '../services/ancestry.management.service';
 
 @Component({
   selector: 'app-grandchild',
@@ -10,12 +11,23 @@ import { GenericHttpService } from '../services/generic-http.service';
 })
 export class GrandchildComponent implements OnInit {
   @Input() grandchild: Grandchild;
-  constructor(private service: GenericHttpService) { }
+  public ancestryForm: FormGroup;
 
-  ngOnInit() {
+  public constructor(private fb: FormBuilder, private service: AncestryManagementService) { }
+
+  public ngOnInit(): void {
+    this.initializeForm();
   }
 
-  public updateGrandchild(): void {
-    this.service.saveRootGrandchild(this.grandchild);
+  public updateName(): void {
+    this.grandchild.name = this.ancestryForm.controls.name.value;
+    this.service.saveGrandchild(this.grandchild);
+  }
+
+  private initializeForm(): void {
+    this.ancestryForm = this.fb.group({
+        name: [this.grandchild.name]
+      }
+    );
   }
 }

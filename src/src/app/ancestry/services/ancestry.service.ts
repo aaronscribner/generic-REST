@@ -20,14 +20,22 @@ export class AncestryService extends HttpResourceService<Ancestry, Ancestry> {
   }
 
   protected responseHandler(response: any, verb: HttpVerb, action: ResourceAction): Ancestry | Ancestry[] {
+    let httpResult;
+
     switch (action) {
       case ResourceAction.List:
-        const ancestry = Ancestry.fromJson(response) as Ancestry[];
-        ancestry.forEach(x => x.parents.forEach(y => RestHierarchyService.assignHierarchyIdentifiers(y, [x.id])));
-        console.table(ancestry);
-        return ancestry;
+        httpResult = Ancestry.fromJson(response) as Ancestry[];
+        httpResult.forEach(x => x.parents.forEach(y => RestHierarchyService.assignHierarchyIdentifiers(y, [x.id])));
+        break;
+      case ResourceAction.Read:
+        httpResult = Ancestry.fromJson(response) as Ancestry;
+        httpResult.parents.forEach(y => RestHierarchyService.assignHierarchyIdentifiers(y, [httpResult.id]));
+        break;
       default:
         throw new Error('Response unhandled');
     }
+
+    console.table(httpResult);
+    return httpResult;
   }
 }

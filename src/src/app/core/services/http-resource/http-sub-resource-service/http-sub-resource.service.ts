@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Resource } from '../../../../shared/models/base-classes/resource.model';
 import { SubResource } from '../../../../shared/models/base-classes/sub-resource.model';
@@ -37,33 +37,36 @@ export abstract class HttpSubResourceService<T extends SubResource, U extends Su
       HttpVerb.POST
     );
     const headers = this.getHeaders(endpointDetails.version);
+    const hierarchyEndpoint = this.buildUrl(endpointDetails.endpoint, item.identifierHierarchy);
     return this.httpClient
-      .post<T>(endpointDetails.endpoint, item)
+      .post<T>(hierarchyEndpoint, item)
       .pipe(
         map((data: T) => this.responseHandler(data, HttpVerb.POST, ResourceAction.Create) as T)
         // catchError(data => this.handleError(data))
       );
   }
 
-  public read(id: number | string): Observable<T> {
+  public read(item: T, id: number | string): Observable<T> {
     const endpointDetails = this.resourceUrlService.resourceUrl(
       this.resourceName,
       HttpVerb.GET
     );
     const headers = this.getHeaders(endpointDetails.version);
-    return this.httpClient.get<T>(`${endpointDetails.endpoint}/${id}`)
+    const hierarchyEndpoint = this.buildUrl(endpointDetails.endpoint, item.identifierHierarchy);
+    return this.httpClient.get<T>(`${hierarchyEndpoint}${id}`)
       .pipe(
         map((data: T) => this.responseHandler(data, HttpVerb.GET, ResourceAction.Read) as T)
       );
   }
 
-  public query(urlParameters: any = {}): Observable<T> {
+  public query(item: T, urlParameters: any = {}): Observable<T> {
     const endpointDetails = this.resourceUrlService.resourceUrl(
       this.resourceName,
       HttpVerb.GET
     );
     const headers = this.getHeaders(endpointDetails.version);
-    return this.httpClient.get<T>(`${endpointDetails.endpoint}/${urlParameters}`)
+    const hierarchyEndpoint = this.buildUrl(endpointDetails.endpoint, item.identifierHierarchy);
+    return this.httpClient.get<T>(`${hierarchyEndpoint}${urlParameters}`)
       .pipe(
         map((data: T) => this.responseHandler(data, HttpVerb.GET, ResourceAction.Query) as T)
       );
@@ -75,19 +78,23 @@ export abstract class HttpSubResourceService<T extends SubResource, U extends Su
       HttpVerb.PUT
     );
     const headers = this.getHeaders(endpointDetails.version);
-    return this.httpClient.put<T>(`${endpointDetails.endpoint}/${item.id}`, item)
-      .pipe(
-        map((data: T) => this.responseHandler(data, HttpVerb.PUT, ResourceAction.Update) as T)
-      );
+    const hierarchyEndpoint = this.buildUrl(endpointDetails.endpoint, item.identifierHierarchy);
+    console.table({hierarchyEndpoint, item});
+    return of(item);
+    // return this.httpClient.put<T>(`${hierarchyEndpoint}${item.id}`, item)
+    //   .pipe(
+    //     map((data: T) => this.responseHandler(data, HttpVerb.PUT, ResourceAction.Update) as T)
+    //   );
   }
 
-  public delete(id: number | string): Observable<object> {
+  public delete(item: T, id: number | string): Observable<object> {
     const endpointDetails = this.resourceUrlService.resourceUrl(
       this.resourceName,
       HttpVerb.DELETE
     );
     const headers = this.getHeaders(endpointDetails.version);
-    return this.httpClient.delete(`${endpointDetails.endpoint}/${id}`)
+    const hierarchyEndpoint = this.buildUrl(endpointDetails.endpoint, item.identifierHierarchy);
+    return this.httpClient.delete(`${hierarchyEndpoint}${id}`)
       .pipe(
         map((data: T) => this.responseHandler(data, HttpVerb.DELETE, ResourceAction.Delete) as T)
       );
@@ -97,6 +104,22 @@ export abstract class HttpSubResourceService<T extends SubResource, U extends Su
     const headers = new HttpHeaders();
     headers.append('version', version);
     return headers;
+  }
+
+  private buildUrl(endpoint: string, identifiers: number[] | string[]) {
+    // TODO: check that the occurrences of :id match the length of identifiers.
+    let url = '';
+    const urlIdentifiers = [...identifiers];
+    endpoint.split('/').forEach(x => {
+      if (x.search(':id') !== -1) {
+        const identifier = urlIdentifiers.shift();
+        url = url.concat(x.replace(':id', identifier.toString()), '/');
+      } else {
+        url = url.concat(`${x}/`);
+      }
+    });
+
+    return url;
   }
 
   // private handleError(response: T | U): void {

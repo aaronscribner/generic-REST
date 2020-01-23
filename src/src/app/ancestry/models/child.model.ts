@@ -3,6 +3,7 @@ import { Grandchild } from './grandchild.model';
 
 export class Child extends SubResource {
   public grandchildren: Grandchild[];
+  public name: string;
 
   public static fromJson(json: any): Child | Child[] {
     if (Array.isArray(json)) {
@@ -13,7 +14,6 @@ export class Child extends SubResource {
     const { grandchildren } = json;
     json.grandchildren = Grandchild.fromJson(grandchildren);
     Object.assign(result, json);
-    // result.grandchildren.forEach(x => x.parentId = [result.id, ...x.parentId]);
     return result;
   }
 }

@@ -15,8 +15,6 @@ export class Ancestry extends Resource {
     const { parents } = json;
     json.parents = Parent.fromJson(parents);
     Object.assign(result, json);
-    // result.parents.forEach(x => x.assignParentIdentifiers([result.id]));
-    // result.parents.forEach(x => x.parentId = [result.id, ...x.parentId]);
     return result;
   }
 }

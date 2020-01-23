@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatCardModule } from '@angular/material';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatCardModule, MatFormFieldModule, MatInputModule } from '@angular/material';
 
 import { AncestryRoutingModule } from './ancestry-routing.module';
 import { AncestryComponent } from './ancestry.component';
@@ -20,6 +21,9 @@ import { GrandchildComponent } from './grandchild/grandchild.component';
     CommonModule,
     AncestryRoutingModule,
     MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    ReactiveFormsModule,
   ],
 })
 export class AncestryModule { }
