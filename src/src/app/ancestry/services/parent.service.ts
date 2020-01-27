@@ -24,7 +24,7 @@ export class ParentService extends HttpSubResourceService<Parent, Parent> {
       case ResourceAction.Read:
         return Parent.fromJson(response);
       case ResourceAction.Update:
-        return
+        return Parent.fromJson(response);
       default:
         throw new Error('Response unhandled');
     }

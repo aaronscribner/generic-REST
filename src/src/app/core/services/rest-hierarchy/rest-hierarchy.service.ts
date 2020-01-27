@@ -16,7 +16,7 @@ export class RestHierarchyService {
 
     if (composedArraySubResources.length > 0) {
       composedArraySubResources = composedArraySubResources.reduce((acc, value) => {
-        if (value.constructor.prototype === SubResource) {
+        if (value.constructor.prototype instanceof SubResource) {
           return [
             acc,
             ...value
@@ -26,8 +26,14 @@ export class RestHierarchyService {
     }
     // composedSubResources = composedSubResources.filter(x => x.constructor.prototype === SubResource);
 
-    const composedSingleSubResource = Object.entries(subResource)
-      .filter(([key, value]) => value.constructor === Contact);
+    const composedSingleSubResource = [];
+
+    Object.values(subResource).forEach(x => {
+      if (x.constructor.prototype instanceof SubResource) {
+       composedSingleSubResource.push(x);
+      }
+    });
+
 
     const composedSubResources = [...composedArraySubResources, ...composedSingleSubResource];
 
