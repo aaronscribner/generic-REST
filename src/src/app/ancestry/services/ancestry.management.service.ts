@@ -27,7 +27,8 @@ export class AncestryManagementService {
   }
 
   public getAncestry(id: number) {
-    this.ancestryService.read(82041).subscribe(
+    this.ancestry.id = id;
+    this.ancestryService.read(this.ancestry).subscribe(
       data => {
         this.ancestry$.next(data);
         this.ancestry = data;
@@ -36,6 +37,10 @@ export class AncestryManagementService {
     );
 
     return this.ancestry$;
+  }
+
+  public getGrandchildren(child: Child) {
+    this.grandchildService.list(child);
   }
 
   public saveParent(parent: Parent) {

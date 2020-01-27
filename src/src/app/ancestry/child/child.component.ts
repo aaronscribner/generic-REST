@@ -20,6 +20,7 @@ export class ChildComponent implements OnInit {
 
   public ngOnInit(): void {
     this.initializeForm();
+    this.service.getGrandchildren(this.child);
   }
 
   public updateName(): void {

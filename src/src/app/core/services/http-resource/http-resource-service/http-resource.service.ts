@@ -1,8 +1,9 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, OperatorFunction } from 'rxjs';
+import { Observable, of, OperatorFunction } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Resource } from '../../../../shared/models/base-classes/resource.model';
+import { SubResource } from '../../../../shared/models/base-classes/sub-resource.model';
 import { HttpVerb } from '../../resource-url-service/enums/http-verbs.enum';
 import { ResourceUrlService } from '../../resource-url-service/resource-url.service';
 import { ResourceAction } from '../enums/resource-action.enum';
@@ -19,17 +20,23 @@ export abstract class HttpResourceService<T extends Resource, U extends Resource
   ) {
   }
 
-  public list(): Observable<U[]> {
+  public list(item: T = null): Observable<U[]> {
     const endpointDetails = this.resourceUrlService.resourceUrl(
       this.resourceName,
       HttpVerb.GET
     );
     const headers = this.getHeaders(endpointDetails.version);
-    return this.httpClient
-      .get<U[]>(endpointDetails.endpoint, {
-        headers
-      })
-      .pipe(map((data: U[]) => this.responseHandler(data, HttpVerb.GET, ResourceAction.List) as U[]));
+    const endpointUri = (item && item instanceof SubResource)
+      ? this.buildUrl(endpointDetails.endpoint, item, true)
+      : endpointDetails.endpoint;
+
+    console.table({endpointUri});
+    return of(null);
+    // return this.httpClient
+    //   .get<U[]>(endpointUri, {
+    //     headers
+    //   })
+    //   .pipe(map((data: U[]) => this.responseHandler(data, HttpVerb.GET, ResourceAction.List) as U[]));
   }
 
   public create(item: T): Observable<T> {
@@ -37,6 +44,11 @@ export abstract class HttpResourceService<T extends Resource, U extends Resource
       this.resourceName,
       HttpVerb.POST
     );
+
+    const endpointUri = (item instanceof SubResource)
+      ? this.buildUrl(endpointDetails.endpoint, item)
+      : endpointDetails.endpoint;
+
     const headers = this.getHeaders(endpointDetails.version);
     return this.httpClient
       .post<T>(endpointDetails.endpoint, item)
@@ -46,23 +58,34 @@ export abstract class HttpResourceService<T extends Resource, U extends Resource
       );
   }
 
-  public read(id: number | string): Observable<T> {
+  public read(item: T): Observable<T> {
     const endpointDetails = this.resourceUrlService.resourceUrl(
       this.resourceName,
       HttpVerb.GET
     );
+
+    const endpointUri = (item instanceof SubResource)
+      ? this.buildUrl(endpointDetails.endpoint, item)
+      : endpointDetails.endpoint;
+
     const headers = this.getHeaders(endpointDetails.version);
-    return this.httpClient.get<T>(`${endpointDetails.endpoint}/${id}`)
+    console.table({ uri: `${endpointUri}/${item.id}`, item});
+    return this.httpClient.get<T>(`${endpointDetails.endpoint}/${item.id}`)
       .pipe(
         map((data: T) => this.responseHandler(data, HttpVerb.GET, ResourceAction.Read) as T)
       );
   }
 
-  public query(urlParameters: any = {}): Observable<T> {
+  public query(item: T, urlParameters: any = {}): Observable<T> {
     const endpointDetails = this.resourceUrlService.resourceUrl(
       this.resourceName,
       HttpVerb.GET
     );
+
+    const endpointUri = (item instanceof SubResource)
+      ? this.buildUrl(endpointDetails.endpoint, item)
+      : endpointDetails.endpoint;
+
     const headers = this.getHeaders(endpointDetails.version);
     return this.httpClient.get<T>(`${endpointDetails.endpoint}/${urlParameters}`)
       .pipe(
@@ -75,20 +98,32 @@ export abstract class HttpResourceService<T extends Resource, U extends Resource
       this.resourceName,
       HttpVerb.PUT
     );
+
+    const endpointUri = (item instanceof SubResource)
+      ? this.buildUrl(endpointDetails.endpoint, item)
+      : endpointDetails.endpoint;
+
     const headers = this.getHeaders(endpointDetails.version);
-    return this.httpClient.put<T>(`${endpointDetails.endpoint}/${item.id}`, item)
-      .pipe(
-        map((data: T) => this.responseHandler(data, HttpVerb.PUT, ResourceAction.Update) as T)
-      );
+    console.table({ uri: `${endpointUri}/${item.id}`, item});
+    return of(item);
+    // return this.httpClient.put<T>(`${endpointDetails.endpoint}/${item.id}`, item)
+    //   .pipe(
+    //     map((data: T) => this.responseHandler(data, HttpVerb.PUT, ResourceAction.Update) as T)
+    //   );
   }
 
-  public delete(id: number | string): Observable<object> {
+  public delete(item: T): Observable<object> {
     const endpointDetails = this.resourceUrlService.resourceUrl(
       this.resourceName,
       HttpVerb.DELETE
     );
+
+    const endpointUri = (item instanceof SubResource)
+      ? this.buildUrl(endpointDetails.endpoint, item)
+      : endpointDetails.endpoint;
+
     const headers = this.getHeaders(endpointDetails.version);
-    return this.httpClient.delete(`${endpointDetails.endpoint}/${id}`)
+    return this.httpClient.delete(`${endpointDetails.endpoint}/${item.id}`)
       .pipe(
         map((data: T) => this.responseHandler(data, HttpVerb.DELETE, ResourceAction.Delete) as T)
       );
@@ -98,6 +133,26 @@ export abstract class HttpResourceService<T extends Resource, U extends Resource
     const headers = new HttpHeaders();
     headers.append('version', version);
     return headers;
+  }
+
+  private buildUrl(endpoint: string, item: SubResource, isList: boolean = false) {
+    // TODO: check that the occurrences of :id match the length of identifiers.
+    let url = '';
+    const urlIdentifiers = [...item.identifierHierarchy];
+    if (isList) {
+      urlIdentifiers.push(item.id);
+    }
+
+    endpoint.split('/').forEach(x => {
+      if (x.search(':id') !== -1) {
+        const identifier = urlIdentifiers.shift();
+        url = url.concat(x.replace(':id', identifier.toString()), '/');
+      } else {
+        url = url.concat(`${x}/`);
+      }
+    });
+
+    return url;
   }
 
   // private handleError(response: T | U): void {
