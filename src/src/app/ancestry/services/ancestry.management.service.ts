@@ -27,7 +27,7 @@ export class AncestryManagementService {
   }
 
   public getAncestry(id: number) {
-    this.ancestryService.read(1).subscribe(
+    this.ancestryService.read(82041).subscribe(
       data => {
         this.ancestry$.next(data);
         this.ancestry = data;

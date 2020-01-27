@@ -16,7 +16,6 @@ export class ParentComponent implements OnInit {
   @Input() parent: Parent;
   @Input() ancestry: Ancestry;
   public ancestryForm: FormGroup;
-  public thisParent = this.parent;
 
   public constructor(private fb: FormBuilder, private service: AncestryManagementService) { }
 
@@ -29,13 +28,13 @@ export class ParentComponent implements OnInit {
   }
 
   public updateName(): void {
-    this.parent.name = this.ancestryForm.controls.name.value;
+    this.parent.contact.name = this.ancestryForm.controls.name.value;
     this.service.saveParent(this.parent);
   }
 
   private initializeForm(): void {
     this.ancestryForm = this.fb.group({
-        name: [this.parent.name]
+        name: [this.parent.contact.fullName]
       }
     );
   }

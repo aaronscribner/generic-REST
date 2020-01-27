@@ -23,13 +23,13 @@ export class ChildComponent implements OnInit {
   }
 
   public updateName(): void {
-    this.child.name = this.ancestryForm.controls.name.value;
+    this.child.contact.name = this.ancestryForm.controls.name.value;
     this.service.saveChild(this.child);
   }
 
   private initializeForm(): void {
     this.ancestryForm = this.fb.group({
-        name: [this.child.name]
+        name: [this.child.contact.fullName]
       }
     );
   }

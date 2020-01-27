@@ -32,7 +32,7 @@ export class AncestryComponent implements OnInit {
   }
 
   private subscribeAncestries(): void {
-    this.service.getAncestry(1).subscribe(
+    this.service.getAncestry(82041).subscribe(
       data => this.ancestry = data
     );
   }

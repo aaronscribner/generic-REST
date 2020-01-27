@@ -1,7 +1,8 @@
 import { SubResource } from '../../shared/models/base-classes/sub-resource.model';
+import { Contact } from './contact.model';
 
 export class Grandchild extends SubResource {
-  public name: string;
+  public contact: Contact;
 
   public static fromJson(json: any): Grandchild | Grandchild[] {
     if (Array.isArray(json)) {
@@ -9,6 +10,8 @@ export class Grandchild extends SubResource {
     }
 
     const result = new Grandchild();
+    const { contact } = json;
+    json.contact = Contact.fromJson(contact);
     Object.assign(result, json);
     return result;
   }

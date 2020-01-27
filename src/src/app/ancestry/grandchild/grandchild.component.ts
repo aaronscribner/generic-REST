@@ -20,13 +20,13 @@ export class GrandchildComponent implements OnInit {
   }
 
   public updateName(): void {
-    this.grandchild.name = this.ancestryForm.controls.name.value;
+    this.grandchild.contact.name = this.ancestryForm.controls.name.value;
     this.service.saveGrandchild(this.grandchild);
   }
 
   private initializeForm(): void {
     this.ancestryForm = this.fb.group({
-        name: [this.grandchild.name]
+        name: [this.grandchild.contact.fullName]
       }
     );
   }

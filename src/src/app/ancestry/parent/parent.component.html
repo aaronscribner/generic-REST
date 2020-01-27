@@ -4,7 +4,7 @@
   </mat-card-title>
   <mat-card-content>
     <p *ngFor="let child of parent.children">
-      {{child.name}}
+      {{child.contact.fullName}}
     </p>
     <form [formGroup]="ancestryForm" class="ancestry-form" (submit)="updateName()">
       <mat-form-field class="ancestry-full-width">
