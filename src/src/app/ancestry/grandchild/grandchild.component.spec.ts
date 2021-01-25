@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { GrandchildComponent } from './grandchild.component';
 
@@ -6,7 +6,7 @@ describe('RootGrandchildComponent', () => {
   let component: GrandchildComponent;
   let fixture: ComponentFixture<GrandchildComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ GrandchildComponent ]
     })
