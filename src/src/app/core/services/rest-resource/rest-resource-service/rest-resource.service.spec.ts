@@ -7,7 +7,7 @@
 // import { Resource } from '../../../shared/models/resource.model';
 // import { ResourceConfig } from '../resource-url-service/models/resource-config.model';
 // import { ResourceUrlService } from '../resource-url-service/resource-url.service';
-// import { HttpResourceService } from './http-resource-service';
+// import { HttpResourceService } from './rest-resource-service';
 // import { HttpClient, HttpClientModule } from '@angular/common/http';
 //
 // class MockResourceUrlService {

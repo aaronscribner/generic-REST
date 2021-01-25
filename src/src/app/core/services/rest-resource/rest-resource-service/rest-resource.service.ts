@@ -12,7 +12,7 @@ import { IHttpResourceResponse } from '../interfaces/http-resource-response.inte
 @Injectable({
   providedIn: 'root'
 })
-export abstract class HttpResourceService<T extends Resource, U extends Resource> {
+export abstract class RestResourceService<T extends Resource, U extends Resource> {
   protected constructor(
     private resourceName: string,
     private httpClient: HttpClient,

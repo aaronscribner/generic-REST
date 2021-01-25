@@ -4,6 +4,7 @@ export abstract class Serializable<T> {
       this.fromJson(object);
     }
   }
+
   public fromJson(json: T | T[] | string): T | T[] {
     if (typeof json === 'string') {
       json = JSON.parse(json) as T | T[];
@@ -14,6 +15,7 @@ export abstract class Serializable<T> {
       return Object.assign(this, json);
     }
   }
+
   public toJson(object?: T | T[]): string {
     return JSON.stringify(object || this);
   }
