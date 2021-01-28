@@ -1,5 +1,5 @@
 
-import { Resource } from '../../shared/models/base-classes/resource.model';
+import { Resource } from '@shared/models/base-classes/resource.model';
 import { Parent } from './parent.model';
 
 export class Ancestry extends Resource {

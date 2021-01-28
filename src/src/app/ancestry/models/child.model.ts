@@ -1,8 +1,8 @@
-import { SubResource } from '../../shared/models/base-classes/sub-resource.model';
 import { Grandchild } from './grandchild.model';
 import { Contact } from './contact.model';
+import { Resource } from '@shared/models/base-classes/resource.model';
 
-export class Child extends SubResource {
+export class Child extends Resource {
   public grandchildren: Grandchild[];
   public contact: Contact;
 

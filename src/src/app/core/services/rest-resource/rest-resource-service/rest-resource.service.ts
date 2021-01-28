@@ -1,26 +1,25 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable, of, OperatorFunction } from 'rxjs';
+import { Inject, Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { Resource } from '../../../../shared/models/base-classes/resource.model';
-import { SubResource } from '../../../../shared/models/base-classes/sub-resource.model';
+import { Resource } from '@shared/models/base-classes/resource.model';
+import { SubResource } from '@shared/models/base-classes/sub-resource.model';
 import { HttpVerb } from '../../resource-url-service/enums/http-verbs.enum';
 import { ResourceUrlService } from '../../resource-url-service/resource-url.service';
 import { ResourceAction } from '../enums/resource-action.enum';
-import { IHttpResourceResponse } from '../interfaces/http-resource-response.interface';
 
 @Injectable({
   providedIn: 'root'
 })
-export abstract class RestResourceService<T extends Resource, U extends Resource> {
+export abstract class RestResourceService<T extends Resource> {
   protected constructor(
-    private resourceName: string,
+    @Inject('string') private resourceName: string,
     private httpClient: HttpClient,
     private resourceUrlService: ResourceUrlService
   ) {
   }
 
-  public list(item: T = null): Observable<U[]> {
+  public list(item: T = null): Observable<T[]> {
     const endpointDetails = this.resourceUrlService.resourceUrl(
       this.resourceName,
       HttpVerb.GET
@@ -31,12 +30,12 @@ export abstract class RestResourceService<T extends Resource, U extends Resource
       : endpointDetails.endpoint;
 
     console.table({endpointUri});
-    return of(null);
-    // return this.httpClient
-    //   .get<U[]>(endpointUri, {
-    //     headers
-    //   })
-    //   .pipe(map((data: U[]) => this.responseHandler(data, HttpVerb.GET, ResourceAction.List) as U[]));
+    // return of(null);
+    return this.httpClient
+      .get<T[]>(endpointUri, {
+        headers
+      })
+      .pipe(map((data: T[]) => this.responseHandler(data, HttpVerb.GET, ResourceAction.List) as T[]));
   }
 
   public create(item: T): Observable<T> {
@@ -99,17 +98,14 @@ export abstract class RestResourceService<T extends Resource, U extends Resource
       HttpVerb.PUT
     );
 
-    const endpointUri = (item instanceof SubResource)
-      ? this.buildUrl(endpointDetails.endpoint, item)
-      : endpointDetails.endpoint;
-
+    const endpointUri = this.buildUrl(endpointDetails.endpoint, item);
     const headers = this.getHeaders(endpointDetails.version);
+    this.removeIdentifierHierarchy(item);
     console.table({ uri: `${endpointUri}/${item.id}`, item});
-    return of(item);
-    // return this.httpClient.put<T>(`${endpointDetails.endpoint}/${item.id}`, item)
-    //   .pipe(
-    //     map((data: T) => this.responseHandler(data, HttpVerb.PUT, ResourceAction.Update) as T)
-    //   );
+    return this.httpClient.put<T>(`${endpointUri}/${item.id}`, item)
+      .pipe(
+        map((data: T) => this.responseHandler(data, HttpVerb.PUT, ResourceAction.Update) as T)
+      );
   }
 
   public delete(item: T): Observable<object> {
@@ -161,5 +157,30 @@ export abstract class RestResourceService<T extends Resource, U extends Resource
   //     : { status: 404, message: 'Empty result' };
   // }
 
-  protected abstract responseHandler(response: any, verb: HttpVerb, action: ResourceAction): T | T[] | U | U[];
+  private removeIdentifierHierarchy(item: Resource): void {
+    delete item.identifierHierarchy;
+    const itemProperties = Object.getOwnPropertyNames(item);
+    itemProperties.forEach(p => {
+      if (Array.isArray(item[p])) {
+        item[p].forEach(arrayItem => {
+          if (arrayItem.hasOwnProperty('identifierHierarchy')) {
+            delete arrayItem.identifierHierarchy;
+          }
+
+          const arrayItemProperties = Object.getOwnPropertyNames(arrayItem);
+
+          arrayItemProperties.forEach(arp => {
+            if (arrayItem[arp].hasOwnProperty('identifierHierarchy')) {
+              this.removeIdentifierHierarchy(arrayItem[arp]);
+            }
+          });
+        });
+      }
+      else if (item[p].hasOwnProperty('identifierHierarchy')) {
+        this.removeIdentifierHierarchy(item[p]);
+      }
+    });
+  }
+
+  protected abstract responseHandler(response: any, verb: HttpVerb, action: ResourceAction): T | T[];
 }

@@ -1,7 +1,7 @@
-import { SubResource } from '../../shared/models/base-classes/sub-resource.model';
 import { Contact } from './contact.model';
+import { Resource } from '@shared/models/base-classes/resource.model';
 
-export class Grandchild extends SubResource {
+export class Grandchild extends Resource {
   public contact: Contact;
 
   public static fromJson(json: any): Grandchild | Grandchild[] {

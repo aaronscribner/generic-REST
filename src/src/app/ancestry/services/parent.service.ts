@@ -1,15 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ResourceAction } from '../../core/services/rest-resource/enums/resource-action.enum';
-import { RestResourceService } from '../../core/services/rest-resource/rest-resource-service/rest-resource.service';
-import { HttpVerb } from '../../core/services/resource-url-service/enums/http-verbs.enum';
-import { ResourceUrlService } from '../../core/services/resource-url-service/resource-url.service';
+import { ResourceAction } from '@core/services/rest-resource/enums/resource-action.enum';
+import { RestResourceService } from '@core/services/rest-resource/rest-resource-service/rest-resource.service';
+import { HttpVerb } from '@core/services/resource-url-service/enums/http-verbs.enum';
+import { ResourceUrlService } from '@core/services/resource-url-service/resource-url.service';
 import { Parent } from '../models/parent.model';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ParentService extends RestResourceService<Parent, Parent> {
+export class ParentService extends RestResourceService<Parent> {
 
   constructor(httpClient: HttpClient, resourceUrlService: ResourceUrlService) {
     super(

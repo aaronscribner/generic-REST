@@ -5,12 +5,14 @@ import { Environment } from './models/environment.model';
 import { ResourceConfig } from './models/resource-config.model';
 import { EndpointDetails } from './models/endpoint-details';
 import { Injectable } from '@angular/core';
+import * as EndpointsFile from '@assets/config/resource-endpoints.json';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ResourceUrlService {
-  private resourceConfig: ResourceConfig = require('../../../../assets/config/resource-endpoints.json');
+  // tslint:disable-next-line: no-any
+  private resourceConfig = (EndpointsFile as any).default as ResourceConfig;
   private resourceDefaultVersionName = 'default';
 
   // Remarks: For unit testing ONLY
@@ -23,9 +25,11 @@ export class ResourceUrlService {
       const runningEnvironment = this.resourceConfig.environments.find(
         x => x.name === environment.resourceEnvironment
       ) as Environment;
+
       const endpointConfig = runningEnvironment.endpoints.find(
         x => x.resource === resource
       ) as Endpoint;
+
       const version =
         endpointConfig.versions.find(
           x => x.verb.toLowerCase() === verb.toLowerCase()

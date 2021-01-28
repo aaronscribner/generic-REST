@@ -1,6 +1,6 @@
-import { SubResource } from '../../shared/models/base-classes/sub-resource.model';
+import { Resource } from '@shared/models/base-classes/resource.model';
 
-export class Contact extends SubResource {
+export class Contact extends Resource {
   public firstName: string;
   public lastName: string;
 
