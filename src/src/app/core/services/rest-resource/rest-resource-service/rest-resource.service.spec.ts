@@ -3,10 +3,10 @@
 //   HttpTestingController,
 // } from '@angular/common/http/testing';
 // import { TestBed } from '@angular/core/testing';
-// import { HttpVerb } from '../resource-url-service/enums/http-verbs.enum';
+// import { HttpVerb } from '../resource-url/enums/http-verbs.enum';
 // import { Resource } from '../../../shared/models/resource.model';
-// import { ResourceConfig } from '../resource-url-service/models/resource-config.model';
-// import { ResourceUrlService } from '../resource-url-service/resource-url.service';
+// import { ResourceConfig } from '../resource-url/models/resource-config.model';
+// import { ResourceUrlService } from '../resource-url/resource-url.service';
 // import { HttpResourceService } from './rest-resource-service';
 // import { HttpClient, HttpClientModule } from '@angular/common/http';
 //

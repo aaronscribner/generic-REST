@@ -1,6 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Resource } from '../shared/models/base-classes/resource.model';
-import { SubResource } from '../shared/models/base-classes/sub-resource.model';
 import { Ancestry } from './models/ancestry.model';
 import { AncestryManagementService } from './services/ancestry.management.service';
 

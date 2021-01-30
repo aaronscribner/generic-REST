@@ -1,11 +1,11 @@
 import { environment } from '../../../../environments/environment';
 import { HttpVerb } from './enums/http-verbs.enum';
-import { Endpoint } from './models/endpoint.model';
 import { Environment } from './models/environment.model';
 import { ResourceConfig } from './models/resource-config.model';
 import { EndpointDetails } from './models/endpoint-details';
 import { Injectable } from '@angular/core';
 import * as EndpointsFile from '@assets/config/resource-endpoints.json';
+import { Endpoint } from '@core/services/resource-url/models/endpoint.model';
 
 @Injectable({
   providedIn: 'root'
@@ -26,9 +26,14 @@ export class ResourceUrlService {
         x => x.name === environment.resourceEnvironment
       ) as Environment;
 
-      const endpointConfig = runningEnvironment.endpoints.find(
-        x => x.resource === resource
-      ) as Endpoint;
+      let endpointConfig: Endpoint;
+      if (runningEnvironment.endpoints) {
+        endpointConfig = runningEnvironment.endpoints.find(x => x.resource === resource) ||
+          this.resourceConfig.endpoints.find(x => x.resource === resource);
+      }
+      else {
+        endpointConfig = this.resourceConfig.endpoints.find(x => x.resource === resource);
+      }
 
       const version =
         endpointConfig.versions.find(

@@ -1,4 +1,4 @@
-export interface IHttpResourceError {
+export interface IRestResourceError {
   message: string;
   status: number;
 }

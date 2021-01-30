@@ -1,22 +1,21 @@
 import { Injectable } from '@angular/core';
-import { SubResource } from '../../../shared/models/base-classes/sub-resource.model';
-import { Contact } from '../../../ancestry/models/contact.model';
+import { Resource } from '@shared/models/base-classes/resource.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RestHierarchyService {
-  public static assignHierarchyIdentifiers(subResource: SubResource | any, parentIdentifiers: any): void {
+  public static assignHierarchyIdentifiers(resource: Resource | any, parentIdentifiers: any): void {
 
-    let composedArraySubResources = Object.entries(subResource)
+    let composedArraySubResources = Object.entries(resource)
       .filter(([key, value]) => key !== 'identifierHierarchy' && value.constructor === Array)
       .map(([key, value]) => Object.values(value));
 
-    subResource.identifierHierarchy = parentIdentifiers;
+    resource.identifierHierarchy = parentIdentifiers;
 
     if (composedArraySubResources.length > 0) {
       composedArraySubResources = composedArraySubResources.reduce((acc, value) => {
-        if (value.constructor.prototype instanceof SubResource) {
+        if (value.constructor.prototype instanceof Resource) {
           return [
             acc,
             ...value
@@ -24,16 +23,14 @@ export class RestHierarchyService {
         }
       });
     }
-    // composedSubResources = composedSubResources.filter(x => x.constructor.prototype === SubResource);
 
     const composedSingleSubResource = [];
 
-    Object.values(subResource).forEach(x => {
-      if (x.constructor.prototype instanceof SubResource) {
+    Object.values(resource).forEach(x => {
+      if (x.constructor.prototype instanceof Resource) {
        composedSingleSubResource.push(x);
       }
     });
-
 
     const composedSubResources = [...composedArraySubResources, ...composedSingleSubResource];
 
@@ -41,7 +38,7 @@ export class RestHierarchyService {
       return;
     }
 
-    const identifiers = [...parentIdentifiers, subResource.id];
+    const identifiers = [...parentIdentifiers, resource.id];
     composedSubResources.forEach(x => RestHierarchyService.assignHierarchyIdentifiers(x, identifiers));
   }
 }

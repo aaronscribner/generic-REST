@@ -3,10 +3,10 @@ import { Inject, Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Resource } from '@shared/models/base-classes/resource.model';
-import { SubResource } from '@shared/models/base-classes/sub-resource.model';
-import { HttpVerb } from '../../resource-url-service/enums/http-verbs.enum';
-import { ResourceUrlService } from '../../resource-url-service/resource-url.service';
+import { HttpVerb } from '../../resource-url/enums/http-verbs.enum';
+import { ResourceUrlService } from '../../resource-url/resource-url.service';
 import { ResourceAction } from '../enums/resource-action.enum';
+import { HttpCodeMessageService } from '@core/services/http-code-message/http-code-message.service';
 
 @Injectable({
   providedIn: 'root'
@@ -25,9 +25,7 @@ export abstract class RestResourceService<T extends Resource> {
       HttpVerb.GET
     );
     const headers = this.getHeaders(endpointDetails.version);
-    const endpointUri = (item && item instanceof SubResource)
-      ? this.buildUrl(endpointDetails.endpoint, item, true)
-      : endpointDetails.endpoint;
+    const endpointUri = this.buildUrl(endpointDetails.endpoint, item, true);
 
     console.table({endpointUri});
     // return of(null);
@@ -35,7 +33,12 @@ export abstract class RestResourceService<T extends Resource> {
       .get<T[]>(endpointUri, {
         headers
       })
-      .pipe(map((data: T[]) => this.responseHandler(data, HttpVerb.GET, ResourceAction.List) as T[]));
+      .pipe(
+        // catchError((error: any, object: Observable<T[]>) => {
+        //   return of(this.httpCodeMessageService.getErrorMessage(error.status, HttpVerb.GET, this.resourceName));
+        // }),
+        map((data: T[]) => this.responseHandler(data, HttpVerb.GET, ResourceAction.List) as T[])
+      );
   }
 
   public create(item: T): Observable<T> {
@@ -44,13 +47,12 @@ export abstract class RestResourceService<T extends Resource> {
       HttpVerb.POST
     );
 
-    const endpointUri = (item instanceof SubResource)
-      ? this.buildUrl(endpointDetails.endpoint, item)
-      : endpointDetails.endpoint;
-
+    const endpointUri = this.buildUrl(endpointDetails.endpoint, item);
     const headers = this.getHeaders(endpointDetails.version);
     return this.httpClient
-      .post<T>(endpointDetails.endpoint, item)
+      .post<T>(endpointUri, item, {
+        headers
+      })
       .pipe(
         map((data: T) => this.responseHandler(data, HttpVerb.POST, ResourceAction.Create) as T)
         // catchError(data => this.handleError(data))
@@ -63,13 +65,12 @@ export abstract class RestResourceService<T extends Resource> {
       HttpVerb.GET
     );
 
-    const endpointUri = (item instanceof SubResource)
-      ? this.buildUrl(endpointDetails.endpoint, item)
-      : endpointDetails.endpoint;
-
+    const endpointUri = this.buildUrl(endpointDetails.endpoint, item);
     const headers = this.getHeaders(endpointDetails.version);
     console.table({ uri: `${endpointUri}/${item.id}`, item});
-    return this.httpClient.get<T>(`${endpointDetails.endpoint}/${item.id}`)
+    return this.httpClient.get<T>(`${endpointDetails.endpoint}/${item.id}`, {
+        headers
+      })
       .pipe(
         map((data: T) => this.responseHandler(data, HttpVerb.GET, ResourceAction.Read) as T)
       );
@@ -81,12 +82,9 @@ export abstract class RestResourceService<T extends Resource> {
       HttpVerb.GET
     );
 
-    const endpointUri = (item instanceof SubResource)
-      ? this.buildUrl(endpointDetails.endpoint, item)
-      : endpointDetails.endpoint;
-
+    const endpointUri = this.buildUrl(endpointDetails.endpoint, item);
     const headers = this.getHeaders(endpointDetails.version);
-    return this.httpClient.get<T>(`${endpointDetails.endpoint}/${urlParameters}`)
+    return this.httpClient.get<T>(`${endpointUri}/${urlParameters}`, { headers })
       .pipe(
         map((data: T) => this.responseHandler(data, HttpVerb.GET, ResourceAction.Query) as T)
       );
@@ -114,12 +112,10 @@ export abstract class RestResourceService<T extends Resource> {
       HttpVerb.DELETE
     );
 
-    const endpointUri = (item instanceof SubResource)
-      ? this.buildUrl(endpointDetails.endpoint, item)
-      : endpointDetails.endpoint;
+    const endpointUri = this.buildUrl(endpointDetails.endpoint, item);
 
     const headers = this.getHeaders(endpointDetails.version);
-    return this.httpClient.delete(`${endpointDetails.endpoint}/${item.id}`)
+    return this.httpClient.delete(`${endpointUri}/${item.id}`)
       .pipe(
         map((data: T) => this.responseHandler(data, HttpVerb.DELETE, ResourceAction.Delete) as T)
       );
@@ -131,7 +127,7 @@ export abstract class RestResourceService<T extends Resource> {
     return headers;
   }
 
-  private buildUrl(endpoint: string, item: SubResource, isList: boolean = false) {
+  private buildUrl(endpoint: string, item: Resource, isList: boolean = false) {
     // TODO: check that the occurrences of :id match the length of identifiers.
     let url = '';
     const urlIdentifiers = [...item.identifierHierarchy];
@@ -150,12 +146,6 @@ export abstract class RestResourceService<T extends Resource> {
 
     return url;
   }
-
-  // private handleError(response: T | U): void {
-  //   throw response && response.error
-  //     ? response.error
-  //     : { status: 404, message: 'Empty result' };
-  // }
 
   private removeIdentifierHierarchy(item: Resource): void {
     delete item.identifierHierarchy;
