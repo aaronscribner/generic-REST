@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Resource } from '@shared/models/base-classes/resource.model';
 import { HttpVerb } from '../../resource-url/enums/http-verbs.enum';
@@ -12,10 +12,12 @@ import { HttpCodeMessageService } from '@core/services/http-code-message/http-co
   providedIn: 'root'
 })
 export abstract class RestResourceService<T extends Resource> {
+  private readonly httpCodeMessageService = new HttpCodeMessageService();
+
   protected constructor(
     @Inject('string') private resourceName: string,
     private httpClient: HttpClient,
-    private resourceUrlService: ResourceUrlService
+    private resourceUrlService: ResourceUrlService,
   ) {
   }
 
@@ -26,17 +28,14 @@ export abstract class RestResourceService<T extends Resource> {
     );
     const headers = this.getHeaders(endpointDetails.version);
     const endpointUri = this.buildUrl(endpointDetails.endpoint, item, true);
-
-    console.table({endpointUri});
-    // return of(null);
     return this.httpClient
       .get<T[]>(endpointUri, {
         headers
       })
       .pipe(
-        // catchError((error: any, object: Observable<T[]>) => {
-        //   return of(this.httpCodeMessageService.getErrorMessage(error.status, HttpVerb.GET, this.resourceName));
-        // }),
+        catchError((error: any, object: Observable<T[]>) => {
+          return of(this.httpCodeMessageService.getErrorMessage(error.status, HttpVerb.GET, this.resourceName));
+        }),
         map((data: T[]) => this.responseHandler(data, HttpVerb.GET, ResourceAction.List) as T[])
       );
   }
@@ -54,8 +53,10 @@ export abstract class RestResourceService<T extends Resource> {
         headers
       })
       .pipe(
+        catchError((error: any, object: Observable<T>) => {
+          return of(this.httpCodeMessageService.getErrorMessage(error.status, HttpVerb.POST, this.resourceName));
+        }),
         map((data: T) => this.responseHandler(data, HttpVerb.POST, ResourceAction.Create) as T)
-        // catchError(data => this.handleError(data))
       );
   }
 
@@ -67,7 +68,6 @@ export abstract class RestResourceService<T extends Resource> {
 
     const endpointUri = this.buildUrl(endpointDetails.endpoint, item);
     const headers = this.getHeaders(endpointDetails.version);
-    console.table({ uri: `${endpointUri}/${item.id}`, item});
     return this.httpClient.get<T>(`${endpointDetails.endpoint}/${item.id}`, {
         headers
       })
@@ -98,10 +98,13 @@ export abstract class RestResourceService<T extends Resource> {
 
     const endpointUri = this.buildUrl(endpointDetails.endpoint, item);
     const headers = this.getHeaders(endpointDetails.version);
-    this.removeIdentifierHierarchy(item);
-    console.table({ uri: `${endpointUri}/${item.id}`, item});
-    return this.httpClient.put<T>(`${endpointUri}/${item.id}`, item)
+    const itemCopy = { ...item };
+    this.removeIdentifierHierarchy(itemCopy);
+    return this.httpClient.put<T>(`${endpointUri}/${itemCopy.id}`, itemCopy)
       .pipe(
+        catchError((error: any) => {
+          return throwError(this.httpCodeMessageService.getErrorMessage(error.status, HttpVerb.PUT, this.resourceName));
+        }),
         map((data: T) => this.responseHandler(data, HttpVerb.PUT, ResourceAction.Update) as T)
       );
   }

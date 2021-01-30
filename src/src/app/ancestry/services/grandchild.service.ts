@@ -5,6 +5,7 @@ import { RestResourceService } from '@core/services/rest-resource/rest-resource-
 import { HttpVerb } from '@core/services/resource-url/enums/http-verbs.enum';
 import { ResourceUrlService } from '@core/services/resource-url/resource-url.service';
 import { Grandchild } from '../models/grandchild.model';
+import { HttpCodeMessage } from '@core/services/http-code-message/models/http-code-message.model';
 
 
 @Injectable({
@@ -24,6 +25,8 @@ export class GrandchildService extends RestResourceService<Grandchild> {
     switch (action) {
       case ResourceAction.Read:
         return Grandchild.fromJson(response);
+      case ResourceAction.Update:
+        return undefined;
       default:
         throw new Error('Response unhandled');
     }

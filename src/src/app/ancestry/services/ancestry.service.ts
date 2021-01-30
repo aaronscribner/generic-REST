@@ -35,7 +35,6 @@ export class AncestryService extends RestResourceService<Ancestry> {
         throw new Error('Response unhandled');
     }
 
-    console.table(httpResult);
     return httpResult;
   }
 }

@@ -12,3 +12,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .ancestry-full-width {
   width: 100%;
 }
+
+#toast-container > div {
+  opacity:1;
+}

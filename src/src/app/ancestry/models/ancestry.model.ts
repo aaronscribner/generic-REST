@@ -15,7 +15,6 @@ export class Ancestry extends Resource {
     const { parents } = json;
     json.parents = Parent.fromJson(parents);
     Object.assign(result, json);
-    console.table(result);
     return result;
   }
 }

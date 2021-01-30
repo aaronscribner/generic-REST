@@ -1,5 +1,5 @@
 export class HttpCodeMessage {
   public httpCode: number;
-  public component?: string;
+  public componentName?: string;
   public message: string;
 }

@@ -8,6 +8,8 @@ import { AncestryService } from './ancestry.service';
 import { ChildService } from './child.service';
 import { GrandchildService } from './grandchild.service';
 import { ParentService } from './parent.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { HttpCodeMessage } from '@core/services/http-code-message/models/http-code-message.model';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +22,9 @@ export class AncestryManagementService {
     private ancestryService: AncestryService,
     private parentService: ParentService,
     private childService: ChildService,
-    private grandchildService: GrandchildService) {
+    private grandchildService: GrandchildService,
+    private snackBar: MatSnackBar
+  ) {
 
     this.ancestry = new Ancestry();
     this.ancestry$ = new BehaviorSubject<Ancestry>(this.ancestry);
@@ -66,6 +70,9 @@ export class AncestryManagementService {
       data => {
         grandchild = data;
         this.ancestry$.next(this.ancestry);
+      },
+      (error: HttpCodeMessage) => {
+        this.snackBar.open(error.message);
       }
     );
   }

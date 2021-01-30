@@ -1,16 +1,20 @@
 import { Injectable } from '@angular/core';
-import { ResourceConfig } from '@core/services/resource-url/models/resource-config.model';
-import * as HttpCodeMessage from '@assets/config/http-code-messages.json'
+import * as HttpCodeMessages from '@assets/config/http-code-messages.json'
 import { HttpVerb } from '@core/services/resource-url/enums/http-verbs.enum';
+import { HttpCodeMessageConfig } from '@core/services/http-code-message/models/http-code-message-config.model';
+import { HttpCodeMessage } from '@core/services/http-code-message/models/http-code-message.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class HttpCodeMessageService {
   // tslint:disable-next-line: no-any
-  private resourceConfig = (HttpCodeMessage as any).default as ResourceConfig;
+  private httpCodeMessageConfig = (HttpCodeMessages as any).default as HttpCodeMessageConfig;
 
-  public getErrorMessage(statusCode: string, httpVerb: HttpVerb, componentName: string) {
-
+  public getErrorMessage(statusCode: number, httpVerb: HttpVerb, componentName: string): HttpCodeMessage {
+    return this.httpCodeMessageConfig.components
+        .find(x => x.componentName === componentName && x.httpCode === statusCode) ||
+      this.httpCodeMessageConfig.messages
+        .find(x => x.httpCode === statusCode);
   }
 }
