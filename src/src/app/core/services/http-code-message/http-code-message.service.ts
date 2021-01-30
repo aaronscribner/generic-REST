@@ -11,9 +11,9 @@ export class HttpCodeMessageService {
   // tslint:disable-next-line: no-any
   private httpCodeMessageConfig = (HttpCodeMessages as any).default as HttpCodeMessageConfig;
 
-  public getErrorMessage(statusCode: number, httpVerb: HttpVerb, componentName: string): HttpCodeMessage {
-    return this.httpCodeMessageConfig.components
-        .find(x => x.componentName === componentName && x.httpCode === statusCode) ||
+  public getErrorMessage(statusCode: number, httpVerb: HttpVerb, resourceName: string): HttpCodeMessage {
+    return this.httpCodeMessageConfig.resources
+        .find(x => x.resourceName === resourceName && x.httpCode === statusCode) ||
       this.httpCodeMessageConfig.messages
         .find(x => x.httpCode === statusCode);
   }

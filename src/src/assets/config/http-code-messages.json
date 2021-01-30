@@ -49,19 +49,19 @@
       "message": "Protocol not supported"
     }
   ],
-  "components": [
+  "resources": [
     {
-      "componentName": "RootGrandchild",
+      "resourceName": "RootGrandchild",
       "httpCode": 404,
       "message": "Unable to find grand child"
     },
     {
-      "componentName": "RootChild",
+      "resourceName": "RootChild",
       "httpCode": 404,
       "message": "Unable to find child"
     },
     {
-      "componentName": "RootParent",
+      "resourceName": "RootParent",
       "httpCode": 404,
       "message": "Unable to find parent"
     }

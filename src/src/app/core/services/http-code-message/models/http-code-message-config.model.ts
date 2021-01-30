@@ -2,5 +2,5 @@ import { HttpCodeMessage } from '@core/services/http-code-message/models/http-co
 
 export class HttpCodeMessageConfig {
   messages: HttpCodeMessage[];
-  components: HttpCodeMessage[];
+  resources: HttpCodeMessage[];
 }
