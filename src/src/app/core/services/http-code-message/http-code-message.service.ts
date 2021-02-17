@@ -15,6 +15,6 @@ export class HttpCodeMessageService {
     return this.httpCodeMessageConfig.resources
         .find(x => x.resourceName === resourceName && x.httpCode === statusCode) ||
       this.httpCodeMessageConfig.messages
-        .find(x => x.httpCode === statusCode);
+        .find(x => x.httpCode === statusCode && x.);
   }
 }
